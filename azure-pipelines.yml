@@ -1,0 +1,29 @@
+strategy:
+  matrix:
+    Linux:
+      vmImage: 'ubuntu-latest'
+    macOS:
+      vmImage: 'macOS-latest'
+    Windows:
+      vmImage: 'windows-latest'
+
+pool:
+  vmImage: '$(vmImage)'
+
+steps:
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.8'
+    architecture: 'x64'
+
+- bash: |
+    set -x
+
+    python -mpip install --upgrade pip setuptools &&
+    python -mpip install -v . &&
+    path="$(python -c 'import foo; print(foo.__file__)')" &&
+    echo 'foobarbaz' >> "$path" &&
+    python -c 'import foo; print(foo.add(1, 2))'
+
+  displayName: 'Build & install & run'
